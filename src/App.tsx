@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCookieStore } from './hooks/useCookieStore';
 import { Header } from './components/Header';
 import { QuickSaleView } from './components/QuickSaleView';
@@ -8,12 +8,37 @@ import { AnalyticsView } from './components/AnalyticsView';
 import { RecipeCalculatorView } from './components/RecipeCalculatorView';
 import { GoalsView } from './components/GoalsView';
 import { SettingsModal } from './components/SettingsModal';
+import { LoginView } from './components/LoginView';
 
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return localStorage.getItem('cookie_app_auth') === 'true';
+  });
+  const [loggedInUser, setLoggedInUser] = useState<string>(() => {
+    return localStorage.getItem('cookie_app_user') || 'Enzo Brandão';
+  });
+
   const [activeTab, setActiveTab] = useState<string>('venda');
   const [showSettings, setShowSettings] = useState<boolean>(false);
 
   const store = useCookieStore();
+
+  const handleLoginSuccess = (username: string) => {
+    setIsAuthenticated(true);
+    setLoggedInUser(username);
+    localStorage.setItem('cookie_app_auth', 'true');
+    localStorage.setItem('cookie_app_user', username);
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    localStorage.removeItem('cookie_app_auth');
+    localStorage.removeItem('cookie_app_user');
+  };
+
+  if (!isAuthenticated) {
+    return <LoginView onLoginSuccess={handleLoginSuccess} />;
+  }
 
   return (
     <div className="min-h-screen bg-[#FFFBF5] text-[#3D2B1F] font-sans flex flex-col selection:bg-[#FFB703] selection:text-[#3D2B1F]">
@@ -28,6 +53,8 @@ export default function App() {
         lowStockCount={store.lowStockCount}
         settings={store.settings}
         onOpenSettings={() => setShowSettings(true)}
+        onLogout={handleLogout}
+        loggedInUser={loggedInUser}
       />
 
       {/* Main Content Area */}

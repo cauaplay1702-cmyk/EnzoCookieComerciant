@@ -11,7 +11,8 @@ import {
   Settings,
   Check,
   Copy,
-  AlertTriangle
+  AlertTriangle,
+  LogOut
 } from 'lucide-react';
 import { AppSettings } from '../types';
 import { CookieLogo } from './CookieLogo';
@@ -26,6 +27,8 @@ interface HeaderProps {
   lowStockCount: number;
   settings: AppSettings;
   onOpenSettings: () => void;
+  onLogout?: () => void;
+  loggedInUser?: string;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -37,7 +40,9 @@ export const Header: React.FC<HeaderProps> = ({
   totalStockCount,
   lowStockCount,
   settings,
-  onOpenSettings
+  onOpenSettings,
+  onLogout,
+  loggedInUser
 }) => {
   const [copiedPix, setCopiedPix] = useState(false);
 
@@ -134,6 +139,18 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <Settings className="w-4 h-4" />
           </button>
+
+          {/* Logout Button */}
+          {onLogout && (
+            <button
+              onClick={onLogout}
+              className="p-2 bg-red-100 hover:bg-red-500 hover:text-white border-2 border-[#3D2B1F] shadow-[3px_3px_0px_0px_#3D2B1F] text-[#3D2B1F] rounded-xl cursor-pointer transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#3D2B1F] flex items-center gap-1 font-black text-xs uppercase"
+              title={`Sair do sistema (${loggedInUser || 'Usuário'})`}
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="hidden sm:inline">Sair</span>
+            </button>
+          )}
         </div>
       </div>
 
