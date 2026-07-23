@@ -1,0 +1,6 @@
+{
+  "name": "Cookie Tracker - Gestão de Vendas Escolar",
+  "description": "Aplicativo completo para controle de vendas de cookies na escola: estoque, registro rápido de caixa, controle de fiado, receitas e metas de lucro.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
