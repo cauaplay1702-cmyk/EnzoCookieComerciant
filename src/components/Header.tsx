@@ -27,6 +27,7 @@ interface HeaderProps {
   lowStockCount: number;
   settings: AppSettings;
   onOpenSettings: () => void;
+  onOpenDigitalMenu?: () => void;
   onLogout?: () => void;
   loggedInUser?: string;
 }
@@ -41,6 +42,7 @@ export const Header: React.FC<HeaderProps> = ({
   lowStockCount,
   settings,
   onOpenSettings,
+  onOpenDigitalMenu,
   onLogout,
   loggedInUser
 }) => {
@@ -128,6 +130,18 @@ export const Header: React.FC<HeaderProps> = ({
               <QrCode className="w-4 h-4" />
               <span className="uppercase tracking-wider">Pix</span>
               {copiedPix ? <Check className="w-4 h-4 text-emerald-800" /> : <Copy className="w-3.5 h-3.5 opacity-80" />}
+            </button>
+          )}
+
+          {/* Cardápio Digital Button */}
+          {onOpenDigitalMenu && (
+            <button
+              onClick={onOpenDigitalMenu}
+              className="bg-[#99582A] hover:bg-[#3D2B1F] text-white border-2 border-[#3D2B1F] shadow-[3px_3px_0px_0px_#3D2B1F] px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-xs font-black cursor-pointer transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#3D2B1F]"
+              title="Abrir Cardápio Digital / Vitrine para Mostrar aos Alunos"
+            >
+              <span>📋</span>
+              <span className="uppercase tracking-wider">Cardápio</span>
             </button>
           )}
 

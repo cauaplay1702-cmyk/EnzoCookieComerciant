@@ -268,29 +268,29 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
       {/* Sales by School Shifts */}
       <div className="bg-[#F7EFE5] rounded-[2rem] border-4 border-[#3D2B1F] shadow-[6px_6px_0px_0px_#3D2B1F] p-6 space-y-4">
         <h3 className="font-black text-[#3D2B1F] uppercase text-lg">
-          🕒 Desempenho por Horário de Recreio
+          🕒 Desempenho por Horário da Escola
         </h3>
         <p className="text-xs font-bold text-[#99582A] uppercase">
-          Descubra qual intervalo escolar traz mais vendas para reforçar o estoque!
+          Descubra qual momento traz mais vendas para reforçar o estoque!
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
           <div className="bg-white p-4 rounded-2xl border-4 border-[#3D2B1F] shadow-[4px_4px_0px_0px_#3D2B1F] text-center space-y-1">
-            <span className="text-xs text-[#99582A] font-black uppercase block">1º Recreio (Manhã)</span>
+            <span className="text-xs text-[#99582A] font-black uppercase block">3 Primeiras Aulas</span>
             <p className="text-2xl font-black text-[#3D2B1F]">
               R$ {(timeOfDayMap.intervalo_1 || 0).toFixed(2)}
             </p>
           </div>
 
           <div className="bg-white p-4 rounded-2xl border-4 border-[#3D2B1F] shadow-[4px_4px_0px_0px_#3D2B1F] text-center space-y-1">
-            <span className="text-xs text-[#99582A] font-black uppercase block">2º Recreio (Tarde)</span>
+            <span className="text-xs text-[#99582A] font-black uppercase block">3 Aulas Finais</span>
             <p className="text-2xl font-black text-[#3D2B1F]">
               R$ {(timeOfDayMap.intervalo_2 || 0).toFixed(2)}
             </p>
           </div>
 
           <div className="bg-white p-4 rounded-2xl border-4 border-[#3D2B1F] shadow-[4px_4px_0px_0px_#3D2B1F] text-center space-y-1">
-            <span className="text-xs text-[#99582A] font-black uppercase block">Saída / Encomenda</span>
+            <span className="text-xs text-[#99582A] font-black uppercase block">Saída</span>
             <p className="text-2xl font-black text-[#3D2B1F]">
               R$ {((timeOfDayMap.saida || 0) + (timeOfDayMap.encomenda || 0)).toFixed(2)}
             </p>

@@ -21,8 +21,10 @@ import {
   Share2,
   Copy,
   Check,
-  AlertCircle
+  AlertCircle,
+  Menu
 } from 'lucide-react';
+import { DigitalMenuModal } from './DigitalMenuModal';
 
 interface QuickSaleViewProps {
   products: CookieProduct[];
@@ -66,6 +68,7 @@ export const QuickSaleView: React.FC<QuickSaleViewProps> = ({
 
   // Add Product Modal state
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showDigitalMenu, setShowDigitalMenu] = useState(false);
   const [newProdName, setNewProdName] = useState('');
   const [newProdCategory, setNewProdCategory] = useState('Tradicional');
   const [newProdSalePrice, setNewProdSalePrice] = useState('');
@@ -257,8 +260,17 @@ ${settings.customReceiptMessage || 'Obrigado e bom apetite!'}`;
           <p className="text-xs font-bold text-[#99582A] uppercase tracking-wider mt-1">Toque no cookie para adicionar ao carrinho</p>
         </div>
 
-        {/* Categories & Add Flavor Button */}
+        {/* Categories & Action Buttons */}
         <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+          <button
+            onClick={() => setShowDigitalMenu(true)}
+            className="px-4 py-2 bg-[#99582A] hover:bg-[#3D2B1F] text-white border-2 border-[#3D2B1F] rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-1.5 shadow-[3px_3px_0px_0px_#3D2B1F] cursor-pointer transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+            title="Abrir Cardápio Digital / Vitrine para Alunos"
+          >
+            <Menu className="w-4 h-4 text-[#FFD700]" />
+            <span>Cardápio do Dia 📋</span>
+          </button>
+
           <button
             onClick={() => setShowAddModal(true)}
             className="px-4 py-2 bg-[#FFB703] hover:bg-[#3D2B1F] hover:text-white text-[#3D2B1F] border-2 border-[#3D2B1F] rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-1.5 shadow-[3px_3px_0px_0px_#3D2B1F] cursor-pointer transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
@@ -512,15 +524,15 @@ ${settings.customReceiptMessage || 'Obrigado e bom apetite!'}`;
               </label>
               <div className="grid grid-cols-3 gap-2 text-xs">
                 {[
-                  { id: 'intervalo_1', label: '1º Recreio' },
-                  { id: 'intervalo_2', label: '2º Recreio' },
-                  { id: 'saida', label: 'Saída' }
+                  { id: 'intervalo_1', label: '3 PRIMEIRAS AULAS' },
+                  { id: 'intervalo_2', label: '3 AULAS FINAIS' },
+                  { id: 'saida', label: 'SAÍDA' }
                 ].map(item => (
                   <button
                     key={item.id}
                     type="button"
                     onClick={() => setTimeOfDay(item.id as TimeOfDay)}
-                    className={`py-2 rounded-xl text-[11px] font-black border-2 border-[#3D2B1F] cursor-pointer uppercase ${
+                    className={`py-2.5 px-2 rounded-xl text-[11px] font-black border-2 border-[#3D2B1F] cursor-pointer uppercase transition-all ${
                       timeOfDay === item.id
                         ? 'bg-[#99582A] text-white shadow-[2px_2px_0px_0px_#3D2B1F]'
                         : 'bg-[#F7EFE5] text-[#3D2B1F] hover:bg-[#FFB703]'
@@ -540,10 +552,10 @@ ${settings.customReceiptMessage || 'Obrigado e bom apetite!'}`;
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
                 {[
-                  { id: 'pix', label: 'Pix', icon: QrCode },
-                  { id: 'dinheiro', label: 'Dinheiro', icon: Banknote },
-                  { id: 'fiado', label: 'Fiado 📝', icon: User },
-                  { id: 'cartao', label: 'Cartão', icon: CheckCircle2 }
+                  { id: 'pix', label: 'PIX', icon: QrCode },
+                  { id: 'dinheiro', label: 'DINHEIRO', icon: Banknote },
+                  { id: 'fiado', label: 'FIADO 📝', icon: User },
+                  { id: 'cartao', label: 'CARTÃO', icon: CheckCircle2 }
                 ].map(method => (
                   <button
                     key={method.id}
@@ -612,13 +624,31 @@ ${settings.customReceiptMessage || 'Obrigado e bom apetite!'}`;
               </div>
             )}
 
-            {/* IF DINHEIRO -> Change Calculator */}
+            {/* IF DINHEIRO -> Change Calculator with Quick Note Buttons */}
             {paymentMethod === 'dinheiro' && (
-              <div className="bg-[#F7EFE5] border-4 border-[#3D2B1F] p-4 rounded-2xl space-y-2 shadow-[4px_4px_0px_0px_#3D2B1F]">
+              <div className="bg-[#F7EFE5] border-4 border-[#3D2B1F] p-4 rounded-2xl space-y-3 shadow-[4px_4px_0px_0px_#3D2B1F]">
                 <label className="block text-xs font-black uppercase text-[#3D2B1F]">
                   Calculadora de Troco
                 </label>
-                <div className="flex items-center gap-2">
+
+                {/* Quick Cash Note Buttons */}
+                <div className="space-y-1">
+                  <span className="text-[10px] font-black uppercase text-[#99582A]">Toque na nota recebida:</span>
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {[5, 10, 20, 50].map(note => (
+                      <button
+                        key={note}
+                        type="button"
+                        onClick={() => setCashGiven(note.toString())}
+                        className="py-1.5 bg-white hover:bg-[#FFB703] border-2 border-[#3D2B1F] rounded-lg text-xs font-black text-[#3D2B1F] cursor-pointer transition-all active:scale-95"
+                      >
+                        R$ {note}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 pt-1">
                   <div className="flex-1">
                     <span className="text-[10px] font-black uppercase text-[#99582A]">Valor Recebido:</span>
                     <input
@@ -919,6 +949,13 @@ ${settings.customReceiptMessage || 'Obrigado e bom apetite!'}`;
           </div>
         </div>
       )}
+      {/* Digital Menu Modal */}
+      <DigitalMenuModal
+        products={products}
+        settings={settings}
+        isOpen={showDigitalMenu}
+        onClose={() => setShowDigitalMenu(false)}
+      />
     </div>
   );
 };

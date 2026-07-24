@@ -9,6 +9,7 @@ import { RecipeCalculatorView } from './components/RecipeCalculatorView';
 import { GoalsView } from './components/GoalsView';
 import { SettingsModal } from './components/SettingsModal';
 import { LoginView } from './components/LoginView';
+import { DigitalMenuModal } from './components/DigitalMenuModal';
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
@@ -20,6 +21,7 @@ export default function App() {
 
   const [activeTab, setActiveTab] = useState<string>('venda');
   const [showSettings, setShowSettings] = useState<boolean>(false);
+  const [showDigitalMenu, setShowDigitalMenu] = useState<boolean>(false);
 
   const store = useCookieStore();
 
@@ -53,6 +55,7 @@ export default function App() {
         lowStockCount={store.lowStockCount}
         settings={store.settings}
         onOpenSettings={() => setShowSettings(true)}
+        onOpenDigitalMenu={() => setShowDigitalMenu(true)}
         onLogout={handleLogout}
         loggedInUser={loggedInUser}
       />
@@ -132,6 +135,14 @@ export default function App() {
           onResetAllData={store.resetAllData}
         />
       )}
+
+      {/* Digital Menu Modal */}
+      <DigitalMenuModal
+        products={store.products}
+        settings={store.settings}
+        isOpen={showDigitalMenu}
+        onClose={() => setShowDigitalMenu(false)}
+      />
     </div>
   );
 }
