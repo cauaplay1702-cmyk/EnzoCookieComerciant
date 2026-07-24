@@ -59,7 +59,7 @@ export const Header: React.FC<HeaderProps> = ({
     { id: 'venda', label: 'Vender', icon: ShoppingBag, badge: todaySalesCount > 0 ? `${todaySalesCount}` : undefined },
     { id: 'estoque', label: 'Estoque', icon: Package, alert: lowStockCount > 0 },
     { id: 'fiado', label: 'Fiado', icon: BookOpen, badge: totalPendingDebts > 0 ? `R$ ${totalPendingDebts.toFixed(0)}` : undefined, badgeColor: 'bg-amber-500 text-white' },
-    { id: 'relatorios', label: 'Finanças', icon: BarChart3 },
+    { id: 'relatorios', label: 'Relatórios', icon: BarChart3 },
     { id: 'receitas', label: 'Receitas', icon: Calculator },
     { id: 'metas', label: 'Metas', icon: Target },
   ];
