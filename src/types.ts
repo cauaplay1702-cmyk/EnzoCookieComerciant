@@ -41,6 +41,21 @@ export interface Sale {
   notes?: string;
 }
 
+export type ConsumptionReason = 'proprio' | 'consumo_proprio' | 'degustacao' | 'cortesia' | 'perda';
+
+export interface ConsumptionRecord {
+  id: string;
+  timestamp: string;
+  productId: string;
+  productName: string;
+  quantity: number;
+  unitCost: number;
+  totalCost: number;
+  reason: ConsumptionReason; // Eu comi / Degustação / Cortesia / Perda
+  personName?: string;
+  notes?: string;
+}
+
 export interface DebtRecord {
   id: string;
   saleId: string;
@@ -66,7 +81,7 @@ export interface Ingredient {
   id: string;
   name: string;
   packagePrice: number; // R$ paid for package
-  packageSize: number; // g or units
+  packageSize: number; // g, ml or units
   unitType: 'g' | 'ml' | 'unidade';
 }
 
@@ -78,10 +93,16 @@ export interface RecipeItem {
 export interface Recipe {
   id: string;
   name: string;
+  category?: string;
   productId?: string;
-  batchYield: number; // e.g. 18 cookies per batch
-  otherCostsPerBatch: number; // packaging, electricity, gas estimate
+  linkedProductId?: string;
+  batchYield: number; // e.g. 20 cookies per batch
+  otherCostsPerBatch?: number; // packaging, electricity, gas estimate
+  extraCosts?: number;
+  desiredMarginPercent?: number; // markup %
+  marginPercent?: number;
   ingredients: RecipeItem[];
+  instructions?: string;
 }
 
 export interface Goal {
@@ -94,6 +115,14 @@ export interface Goal {
   icon?: string;
 }
 
+export interface ActionHistoryItem {
+  id: string;
+  type: 'sale' | 'debt_payment' | 'consumption' | 'stock_add' | 'product_delete' | 'recipe_delete' | 'ingredient_delete';
+  description: string;
+  timestamp: string;
+  data: any;
+}
+
 export interface AppSettings {
   sellerName: string;
   schoolName: string;
@@ -101,3 +130,4 @@ export interface AppSettings {
   pixKeyType: 'cpf' | 'email' | 'telefone' | 'aleatoria';
   customReceiptMessage: string;
 }
+

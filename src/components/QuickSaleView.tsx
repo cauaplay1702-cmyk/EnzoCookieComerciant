@@ -4,7 +4,8 @@ import {
   PaymentMethod,
   TimeOfDay,
   AppSettings,
-  Sale
+  Sale,
+  ConsumptionReason
 } from '../types';
 import {
   ShoppingBag,
@@ -22,9 +23,11 @@ import {
   Copy,
   Check,
   AlertCircle,
-  Menu
+  Menu,
+  Utensils
 } from 'lucide-react';
 import { DigitalMenuModal } from './DigitalMenuModal';
+import { ConsumptionModal } from './ConsumptionModal';
 
 interface QuickSaleViewProps {
   products: CookieProduct[];
@@ -41,6 +44,13 @@ interface QuickSaleViewProps {
   }) => Sale | null;
   onNavigateToStock: () => void;
   onSaveProduct?: (product: Partial<CookieProduct> & { name: string }) => void;
+  onRecordConsumption?: (params: {
+    productId: string;
+    quantity: number;
+    reason: ConsumptionReason;
+    personName?: string;
+    notes?: string;
+  }) => void;
 }
 
 export const QuickSaleView: React.FC<QuickSaleViewProps> = ({
@@ -48,7 +58,8 @@ export const QuickSaleView: React.FC<QuickSaleViewProps> = ({
   settings,
   onRecordSale,
   onNavigateToStock,
-  onSaveProduct
+  onSaveProduct,
+  onRecordConsumption
 }) => {
   // Cart state: map of productId -> quantity
   const [cart, setCart] = useState<Record<string, number>>({});
@@ -66,9 +77,10 @@ export const QuickSaleView: React.FC<QuickSaleViewProps> = ({
   const [lastSale, setLastSale] = useState<Sale | null>(null);
   const [copiedReceipt, setCopiedReceipt] = useState(false);
 
-  // Add Product Modal state
+  // Modals state
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDigitalMenu, setShowDigitalMenu] = useState(false);
+  const [showConsumptionModal, setShowConsumptionModal] = useState(false);
   const [newProdName, setNewProdName] = useState('');
   const [newProdCategory, setNewProdCategory] = useState('Tradicional');
   const [newProdSalePrice, setNewProdSalePrice] = useState('');
@@ -270,6 +282,17 @@ ${settings.customReceiptMessage || 'Obrigado e bom apetite!'}`;
             <Menu className="w-4 h-4 text-[#FFD700]" />
             <span>Cardápio do Dia 📋</span>
           </button>
+
+          {onRecordConsumption && (
+            <button
+              onClick={() => setShowConsumptionModal(true)}
+              className="px-3.5 py-2 bg-[#F7EFE5] hover:bg-[#FFB703] text-[#3D2B1F] border-2 border-[#3D2B1F] rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-1.5 shadow-[3px_3px_0px_0px_#3D2B1F] cursor-pointer transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+              title="Registrar Cookie Consumido (Eu comi, Degustação, etc.)"
+            >
+              <span>😋</span>
+              <span>Comeu / Consumo</span>
+            </button>
+          )}
 
           <button
             onClick={() => setShowAddModal(true)}
@@ -956,6 +979,16 @@ ${settings.customReceiptMessage || 'Obrigado e bom apetite!'}`;
         isOpen={showDigitalMenu}
         onClose={() => setShowDigitalMenu(false)}
       />
+
+      {/* Consumption Modal */}
+      {onRecordConsumption && (
+        <ConsumptionModal
+          products={products}
+          isOpen={showConsumptionModal}
+          onClose={() => setShowConsumptionModal(false)}
+          onRecordConsumption={onRecordConsumption}
+        />
+      )}
     </div>
   );
 };

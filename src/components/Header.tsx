@@ -12,7 +12,8 @@ import {
   Check,
   Copy,
   AlertTriangle,
-  LogOut
+  LogOut,
+  Undo2
 } from 'lucide-react';
 import { AppSettings } from '../types';
 import { CookieLogo } from './CookieLogo';
@@ -25,9 +26,12 @@ interface HeaderProps {
   totalPendingDebts: number;
   totalStockCount: number;
   lowStockCount: number;
+  actionHistoryCount?: number;
   settings: AppSettings;
   onOpenSettings: () => void;
   onOpenDigitalMenu?: () => void;
+  onOpenActionHistory?: () => void;
+  onUndoLastAction?: () => void;
   onLogout?: () => void;
   loggedInUser?: string;
 }
@@ -40,9 +44,12 @@ export const Header: React.FC<HeaderProps> = ({
   totalPendingDebts,
   totalStockCount,
   lowStockCount,
+  actionHistoryCount = 0,
   settings,
   onOpenSettings,
   onOpenDigitalMenu,
+  onOpenActionHistory,
+  onUndoLastAction,
   onLogout,
   loggedInUser
 }) => {
@@ -142,6 +149,27 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <span>📋</span>
               <span className="uppercase tracking-wider">Cardápio</span>
+            </button>
+          )}
+
+          {/* Undo / Action History Button */}
+          {onOpenActionHistory && (
+            <button
+              onClick={onOpenActionHistory}
+              className={`p-2 border-2 border-[#3D2B1F] shadow-[3px_3px_0px_0px_#3D2B1F] rounded-xl cursor-pointer transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#3D2B1F] flex items-center gap-1 font-black text-xs uppercase ${
+                actionHistoryCount > 0
+                  ? 'bg-[#FFFBF5] hover:bg-[#FFB703] text-[#3D2B1F]'
+                  : 'bg-stone-200 text-stone-500 opacity-60'
+              }`}
+              title="Histórico de Ações & Desfazer (Sem reiniciar o sistema)"
+            >
+              <Undo2 className="w-4 h-4" />
+              <span className="hidden md:inline">Desfazer</span>
+              {actionHistoryCount > 0 && (
+                <span className="bg-[#99582A] text-white text-[10px] px-1.5 py-0.2 rounded-full">
+                  {actionHistoryCount}
+                </span>
+              )}
             </button>
           )}
 

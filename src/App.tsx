@@ -10,6 +10,8 @@ import { GoalsView } from './components/GoalsView';
 import { SettingsModal } from './components/SettingsModal';
 import { LoginView } from './components/LoginView';
 import { DigitalMenuModal } from './components/DigitalMenuModal';
+import { ToastUndoBanner } from './components/ToastUndoBanner';
+import { ActionHistoryModal } from './components/ActionHistoryModal';
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
@@ -22,6 +24,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<string>('venda');
   const [showSettings, setShowSettings] = useState<boolean>(false);
   const [showDigitalMenu, setShowDigitalMenu] = useState<boolean>(false);
+  const [showActionHistory, setShowActionHistory] = useState<boolean>(false);
 
   const store = useCookieStore();
 
@@ -53,9 +56,12 @@ export default function App() {
         totalPendingDebts={store.totalPendingDebts}
         totalStockCount={store.totalStockCount}
         lowStockCount={store.lowStockCount}
+        actionHistoryCount={store.actionHistory.length}
         settings={store.settings}
         onOpenSettings={() => setShowSettings(true)}
         onOpenDigitalMenu={() => setShowDigitalMenu(true)}
+        onOpenActionHistory={() => setShowActionHistory(true)}
+        onUndoLastAction={store.undoLastAction}
         onLogout={handleLogout}
         loggedInUser={loggedInUser}
       />
@@ -69,6 +75,7 @@ export default function App() {
             onRecordSale={store.recordSale}
             onNavigateToStock={() => setActiveTab('estoque')}
             onSaveProduct={store.saveProduct}
+            onRecordConsumption={store.recordConsumption}
           />
         )}
 
@@ -79,6 +86,8 @@ export default function App() {
             onUpdateStock={store.updateProductStock}
             onSaveProduct={store.saveProduct}
             onToggleActive={store.toggleProductActive}
+            onDeleteProduct={store.deleteProduct}
+            onRecordConsumption={store.recordConsumption}
           />
         )}
 
@@ -94,9 +103,12 @@ export default function App() {
           <AnalyticsView
             sales={store.sales}
             products={store.products}
+            consumptions={store.consumptions}
             totalRevenue={store.totalRevenue}
             totalCost={store.totalCost}
             totalProfit={store.totalProfit}
+            onDeleteSale={store.deleteSale}
+            onDeleteConsumption={store.deleteConsumption}
           />
         )}
 
@@ -104,8 +116,13 @@ export default function App() {
           <RecipeCalculatorView
             ingredients={store.ingredients}
             recipes={store.recipes}
+            products={store.products}
             onSaveIngredient={store.saveIngredient}
+            onDeleteIngredient={store.deleteIngredient}
             onSaveRecipe={store.saveRecipe}
+            onDeleteRecipe={store.deleteRecipe}
+            onDuplicateRecipe={store.duplicateRecipe}
+            onApplyRecipeCostToProduct={store.applyRecipeCostToProduct}
           />
         )}
 
@@ -125,6 +142,21 @@ export default function App() {
           🍪 COOKIE TRACKER • GESTÃO DE VENDAS NA ESCOLA • COOKIES.
         </p>
       </footer>
+
+      {/* Undo Toast Notification (Floating at bottom-left) */}
+      <ToastUndoBanner
+        toast={store.toastNotification}
+        onUndo={store.undoAction}
+        onDismiss={store.dismissToast}
+      />
+
+      {/* Action History / Desfazer Modal */}
+      <ActionHistoryModal
+        isOpen={showActionHistory}
+        onClose={() => setShowActionHistory(false)}
+        actionHistory={store.actionHistory}
+        onUndoAction={store.undoAction}
+      />
 
       {/* Settings Modal */}
       {showSettings && (
@@ -146,4 +178,3 @@ export default function App() {
     </div>
   );
 }
-

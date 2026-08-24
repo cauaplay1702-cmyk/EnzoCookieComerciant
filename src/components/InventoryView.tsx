@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CookieProduct } from '../types';
+import { CookieProduct, ConsumptionReason } from '../types';
 import {
   Package,
   Plus,
@@ -10,8 +10,11 @@ import {
   Check,
   X,
   Flame,
-  Power
+  Power,
+  Utensils,
+  Trash2
 } from 'lucide-react';
+import { ConsumptionModal } from './ConsumptionModal';
 
 interface InventoryViewProps {
   products: CookieProduct[];
@@ -19,6 +22,14 @@ interface InventoryViewProps {
   onUpdateStock: (productId: string, newQty: number) => void;
   onSaveProduct: (product: Partial<CookieProduct> & { name: string }) => void;
   onToggleActive: (productId: string) => void;
+  onDeleteProduct?: (productId: string) => void;
+  onRecordConsumption?: (params: {
+    productId: string;
+    quantity: number;
+    reason: ConsumptionReason;
+    personName?: string;
+    notes?: string;
+  }) => void;
 }
 
 export const InventoryView: React.FC<InventoryViewProps> = ({
@@ -26,10 +37,14 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
   onAddBatchStock,
   onUpdateStock,
   onSaveProduct,
-  onToggleActive
+  onToggleActive,
+  onDeleteProduct,
+  onRecordConsumption
 }) => {
   const [editingProduct, setEditingProduct] = useState<Partial<CookieProduct> | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [showConsumptionModal, setShowConsumptionModal] = useState(false);
+  const [consumptionInitialProdId, setConsumptionInitialProdId] = useState<string | undefined>(undefined);
   const [filterCategory, setFilterCategory] = useState<string>('Todos');
 
   // Stats
@@ -92,13 +107,28 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
           </p>
         </div>
 
-        <button
-          onClick={handleOpenAdd}
-          className="py-3 px-5 bg-[#FFB703] hover:bg-[#3D2B1F] hover:text-white text-[#3D2B1F] font-black rounded-2xl text-xs uppercase tracking-wider flex items-center gap-2 border-4 border-[#3D2B1F] shadow-[4px_4px_0px_0px_#3D2B1F] cursor-pointer transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
-        >
-          <Plus className="w-5 h-5" />
-          <span>Cadastrar Novo Sabor</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-3">
+          {onRecordConsumption && (
+            <button
+              onClick={() => {
+                setConsumptionInitialProdId(undefined);
+                setShowConsumptionModal(true);
+              }}
+              className="py-3 px-5 bg-white hover:bg-[#FFB703] text-[#3D2B1F] font-black rounded-2xl text-xs uppercase tracking-wider flex items-center gap-2 border-4 border-[#3D2B1F] shadow-[4px_4px_0px_0px_#3D2B1F] cursor-pointer transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+            >
+              <span>😋</span>
+              <span>Registrar Consumo</span>
+            </button>
+          )}
+
+          <button
+            onClick={handleOpenAdd}
+            className="py-3 px-5 bg-[#FFB703] hover:bg-[#3D2B1F] hover:text-white text-[#3D2B1F] font-black rounded-2xl text-xs uppercase tracking-wider flex items-center gap-2 border-4 border-[#3D2B1F] shadow-[4px_4px_0px_0px_#3D2B1F] cursor-pointer transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+          >
+            <Plus className="w-5 h-5" />
+            <span>Cadastrar Novo Sabor</span>
+          </button>
+        </div>
       </div>
 
       {/* Summary Cards */}
@@ -241,12 +271,26 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
                   </span>
                 </div>
 
-                {/* Batch Increments */}
-                <div className="space-y-1">
-                  <span className="text-[10px] font-black uppercase text-[#99582A] flex items-center gap-1">
-                    <Flame className="w-3.5 h-3.5 text-[#FFB703]" />
-                    Registrar Nova Fornada:
-                  </span>
+                {/* Batch Increments & Consumption */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-black uppercase text-[#99582A] flex items-center gap-1">
+                      <Flame className="w-3.5 h-3.5 text-[#FFB703]" />
+                      Adicionar Fornada:
+                    </span>
+                    {onRecordConsumption && (
+                      <button
+                        onClick={() => {
+                          setConsumptionInitialProdId(product.id);
+                          setShowConsumptionModal(true);
+                        }}
+                        className="text-[10px] font-black text-[#3D2B1F] bg-[#F7EFE5] hover:bg-[#FFB703] border border-[#3D2B1F] px-2 py-0.5 rounded-md cursor-pointer transition-colors"
+                        title="Registrar consumo deste sabor"
+                      >
+                        😋 Comeu
+                      </button>
+                    )}
+                  </div>
                   <div className="flex items-center gap-2">
                     {[+5, +10, +20].map(qty => (
                       <button
@@ -381,24 +425,58 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
                 />
               </div>
 
-              <div className="pt-3 flex justify-end gap-3 border-t-2 border-[#3D2B1F]">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="py-3 px-5 rounded-xl font-black uppercase bg-[#F7EFE5] border-2 border-[#3D2B1F] text-[#3D2B1F] cursor-pointer"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="py-3 px-6 rounded-xl font-black uppercase bg-[#FFB703] border-2 border-[#3D2B1F] shadow-[3px_3px_0px_0px_#3D2B1F] text-[#3D2B1F] hover:bg-[#3D2B1F] hover:text-white cursor-pointer transition-colors"
-                >
-                  Salvar Cookie
-                </button>
+              <div className="pt-3 flex items-center justify-between gap-3 border-t-2 border-[#3D2B1F]">
+                {editingProduct.id && onDeleteProduct ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (window.confirm(`Deseja realmente excluir o sabor "${editingProduct.name}"?`)) {
+                        onDeleteProduct(editingProduct.id!);
+                        setShowModal(false);
+                      }
+                    }}
+                    className="py-3 px-4 rounded-xl font-black uppercase bg-red-100 hover:bg-red-500 hover:text-white border-2 border-[#3D2B1F] text-red-800 cursor-pointer flex items-center gap-1"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    <span>Excluir</span>
+                  </button>
+                ) : (
+                  <div></div>
+                )}
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowModal(false)}
+                    className="py-3 px-5 rounded-xl font-black uppercase bg-[#F7EFE5] border-2 border-[#3D2B1F] text-[#3D2B1F] cursor-pointer"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    className="py-3 px-6 rounded-xl font-black uppercase bg-[#FFB703] border-2 border-[#3D2B1F] shadow-[3px_3px_0px_0px_#3D2B1F] text-[#3D2B1F] hover:bg-[#3D2B1F] hover:text-white cursor-pointer transition-colors"
+                  >
+                    Salvar Cookie
+                  </button>
+                </div>
               </div>
             </form>
           </div>
         </div>
+      )}
+
+      {/* Consumption Modal */}
+      {onRecordConsumption && (
+        <ConsumptionModal
+          products={products}
+          initialProductId={consumptionInitialProdId}
+          isOpen={showConsumptionModal}
+          onClose={() => {
+            setShowConsumptionModal(false);
+            setConsumptionInitialProdId(undefined);
+          }}
+          onRecordConsumption={onRecordConsumption}
+        />
       )}
     </div>
   );
